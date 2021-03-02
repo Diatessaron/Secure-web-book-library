@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Comment</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style type="text/css">
+        body {
+            padding: 20px;
+        }
+
+        .comment td {
+            border: 1px solid lightgray;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<header class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+    <a th:href="@{/}" href="index.html" class="h5 my-0 me-md-auto fw-normal">Main page</a>
+</header>
+
+<h1>Comment:</h1>
+
+<table class="comment">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Book Title</th>
+        <th>Content</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td th:text="${comment.id}">1</td>
+        <td th:text="${comment.book.title}">Book</td>
+        <td th:text="${comment.content}">Comment</td>
+        <td>
+            <a th:href="@{'/comments/edit/{comment}'(comment=${comment.content})}"
+               href="commentEdit.html">Edit</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

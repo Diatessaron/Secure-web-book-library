@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Comment List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style type="text/css">
+        body {
+            padding: 20px;
+        }
+
+        .comments td {
+            border: 1px solid lightgray;
+            padding: 5px;
+        }
+
+        a {
+            padding: 2px;
+            margin: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<header class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+    <a th:href="@{/}" href="index.html" class="h5 my-0 me-md-auto fw-normal">Main page</a>
+    <nav class="my-2 my-md-0 me-md-3">
+        <a th:href="@{/comments/add}" href="commentSave.html" class="btn btn-outline-primary">Add comment</a>
+    </nav>
+</header>
+
+<h2>Comments:</h2>
+
+<table class="comments">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Book</th>
+        <th>Content</th>
+        <th>Edit</th>
+        <th>Delete</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="comment : ${comments}">
+        <td th:text="${comment.id}">1</td>
+        <td>
+            <a th:text="${comment.book.title}"
+               th:href="@{'/comments/book/{bookTitle}'(bookTitle=${comment.book.title})}"
+               href="commentList.html">Comment</a>
+        </td>
+        <td>
+            <a th:text="${comment.content}"
+               th:href="@{'/comments/{content}'(content=${comment.content})}"
+               href="comment.html"></a>
+        </td>
+        <td>
+            <a th:href="@{'/comments/edit/{name}'(name=${comment.content})}"
+               href="commentEdit.html">Edit</a>
+        </td>
+        <td>
+            <form th:object="${comment}"
+                  th:action="@{'/comments/{content}'(content=${comment.content})}"
+                  th:method="post">
+                <button type="submit" class="btn">
+                    Delete
+                </button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

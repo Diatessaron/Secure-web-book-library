@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Book List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style type="text/css">
+        body {
+            padding: 20px;
+        }
+
+        .books td {
+            border: 1px solid lightgray;
+            padding: 5px;
+        }
+
+        a {
+            padding: 2px;
+            margin: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<header class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+    <a th:href="@{/}" href="index.html" class="h5 my-0 me-md-auto fw-normal">Main page</a>
+    <nav class="my-2 my-md-0 me-md-3">
+        <a th:href="@{/books/add}" href="bookSave.html" class="btn btn-outline-primary">Add book</a>
+    </nav>
+</header>
+
+<br>
+<br>
+<form th:action="@{'/books/comment'}"
+      th:method="get">
+    <input type="text" name="comment" placeholder="Input book comment"
+           class="form-control"><br>
+    <button type="submit" class="btn btn-success">Find book by comment</button>
+</form>
+
+<br>
+<br>
+
+<h2>Books:</h2>
+
+<table class="books">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Author</th>
+        <th>Genre</th>
+        <th>Edit</th>
+        <th>Delete</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="book : ${books}">
+        <td th:text="${book.id}">1</td>
+        <td>
+            <a th:text="${book.title}" th:href="@{'/books/title/{title}'(title=${book.title})}"
+               href="bookByTitle.html">Book</a>
+        </td>
+        <td>
+            <a th:text="${book.author.name}"
+               th:href="@{'/books/author/{author}'(author=${book.author.name})}"
+               href="bookByTitle.html">Author</a>
+        </td>
+        <td>
+            <a th:text="${book.genre.name}"
+               th:href="@{'/books/genre/{genre}'(genre=${book.genre.name})}"
+               href="bookByTitle.html">Genre</a>
+        </td>
+        <td>
+            <a th:href="@{'/books/edit/{title}'(title=${book.title})}"
+               href="bookEdit.html">Edit</a>
+        </td>
+        <td>
+            <form th:object="${book}" th:action="@{'/books/{title}'(title=${book.title})}"
+                  th:method="post">
+                <button type="submit" class="btn">
+                    Delete
+                </button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
