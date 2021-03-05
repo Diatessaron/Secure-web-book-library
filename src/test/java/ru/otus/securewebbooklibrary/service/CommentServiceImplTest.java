@@ -133,7 +133,6 @@ class CommentServiceImplTest {
 
         final InOrder inOrder = inOrder(bookRepository, commentRepository);
         inOrder.verify(commentRepository).findByContent("Published in 1922");
-        inOrder.verify(bookRepository).findByTitle("Ulysses");
         inOrder.verify(commentRepository).save(comment);
     }
 
@@ -145,14 +144,12 @@ class CommentServiceImplTest {
         when(bookRepository.findByTitle(ulysses.getTitle())).thenReturn(List.of(ulysses));
         doNothing().when(commentRepository).deleteByContent(ulyssesComment.getContent());
 
-        final String expected = "Ulysses comment was deleted";
+        final String expected = "Comment was deleted";
         final String actual = commentService.deleteByContent("Published in 1922");
 
         assertEquals(expected, actual);
 
         final InOrder inOrder = inOrder(bookRepository, commentRepository);
-        inOrder.verify(commentRepository).findByContent(ulyssesComment.getContent());
-        inOrder.verify(bookRepository).findByTitle(ulysses.getTitle());
         inOrder.verify(commentRepository).deleteByContent(ulyssesComment.getContent());
     }
 }

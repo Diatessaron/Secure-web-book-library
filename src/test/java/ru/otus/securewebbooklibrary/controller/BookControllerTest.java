@@ -4,10 +4,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.otus.securewebbooklibrary.domain.Author;
 import ru.otus.securewebbooklibrary.domain.Book;
 import ru.otus.securewebbooklibrary.domain.Genre;
+import ru.otus.securewebbooklibrary.security.UserServiceImpl;
 import ru.otus.securewebbooklibrary.service.AuthorServiceImpl;
 import ru.otus.securewebbooklibrary.service.BookServiceImpl;
 import ru.otus.securewebbooklibrary.service.GenreServiceImpl;
@@ -31,7 +34,14 @@ class BookControllerTest {
     private AuthorServiceImpl authorService;
     @MockBean
     private GenreServiceImpl genreService;
+    @MockBean
+    private UserServiceImpl userService;
 
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
     @Test
     void testSaveByStatus() throws Exception {
         when(bookService.getAll()).thenReturn(List.of
@@ -43,6 +53,28 @@ class BookControllerTest {
                 .andExpect(status().isFound());
     }
 
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
+    @Test
+    void testAuthenticatedOnUser() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/books"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldRedirectBecauseOfAnonymousUser() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/books"))
+                .andExpect(status().isFound());
+    }
+
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
     @Test
     void testGetBookByTitleByStatus() throws Exception {
         when(bookService.getBookByTitle("Book")).thenReturn(new Book("Book", new Author("Author"),
@@ -52,6 +84,11 @@ class BookControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
     @Test
     void testGetBookByAuthorByStatus() throws Exception {
         when(bookService.getBookByAuthor("Author")).thenReturn(new Book("Book", new Author("Author"),
@@ -61,6 +98,11 @@ class BookControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
     @Test
     void testGetBookByGenreByStatus() throws Exception {
         when(bookService.getBookByGenre("Genre")).thenReturn(new Book("Book", new Author("Author"),
@@ -70,6 +112,11 @@ class BookControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
     @Test
     void testGetBookByCommentByStatus() throws Exception {
         when(bookService.getBookByComment("Comment")).thenReturn(new Book("Book", new Author("Author"),
@@ -80,6 +127,11 @@ class BookControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
     @Test
     void testGetAllByStatusByStatus() throws Exception {
         when(bookService.getAll()).thenReturn(List.of
@@ -90,6 +142,11 @@ class BookControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
     @Test
     void testUpdateByStatus() throws Exception {
         doNothing().when(bookService).updateBook
@@ -102,6 +159,11 @@ class BookControllerTest {
                 .andExpect(status().isFound());
     }
 
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
     @Test
     void deleteByTitle() throws Exception {
         doNothing().when(bookService).deleteBookByTitle("Ulysses");
