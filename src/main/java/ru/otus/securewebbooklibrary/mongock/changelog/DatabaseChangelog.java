@@ -3,17 +3,18 @@ package ru.otus.securewebbooklibrary.mongock.changelog;
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
 import com.mongodb.client.MongoDatabase;
-import ru.otus.securewebbooklibrary.domain.Author;
-import ru.otus.securewebbooklibrary.domain.Book;
-import ru.otus.securewebbooklibrary.domain.Comment;
-import ru.otus.securewebbooklibrary.domain.Genre;
-import ru.otus.securewebbooklibrary.repository.AuthorRepository;
-import ru.otus.securewebbooklibrary.repository.BookRepository;
-import ru.otus.securewebbooklibrary.repository.CommentRepository;
-import ru.otus.securewebbooklibrary.repository.GenreRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import ru.otus.securewebbooklibrary.domain.*;
+import ru.otus.securewebbooklibrary.repository.*;
 
 @ChangeLog
 public class DatabaseChangelog {
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    public DatabaseChangelog() {
+        this.bCryptPasswordEncoder = new BCryptPasswordEncoder();
+    }
+
     @ChangeSet(order = "001", id = "dropDb", runAlways = true, author = "Diatessaron")
     public void dropDb(MongoDatabase db) {
         db.drop();
@@ -38,5 +39,11 @@ public class DatabaseChangelog {
     @ChangeSet(order = "005", id = "insertComment", runAlways = true, author = "Diatessaron")
     public void insertComment(CommentRepository repository) {
         repository.save(new Comment("Published in 1922", "Ulysses"));
+    }
+
+    @ChangeSet(order = "006", id = "insertUsers", runAlways = true, author = "Diatessaron")
+    public void insertUsers(UserRepository repository) {
+        repository.save(new User("User1", bCryptPasswordEncoder.encode("Password1")));
+        repository.save(new User("User2", bCryptPasswordEncoder.encode("Password2")));
     }
 }

@@ -4,8 +4,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.otus.securewebbooklibrary.domain.Comment;
+import ru.otus.securewebbooklibrary.security.UserServiceImpl;
 import ru.otus.securewebbooklibrary.service.BookServiceImpl;
 import ru.otus.securewebbooklibrary.service.CommentServiceImpl;
 
@@ -25,7 +28,14 @@ class CommentControllerTest {
     private CommentServiceImpl commentService;
     @MockBean
     private BookServiceImpl bookService;
+    @MockBean
+    private UserServiceImpl userService;
 
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
     @Test
     void testSaveByStatus() throws Exception {
         when(commentService.getAll()).thenReturn(List.of
@@ -38,6 +48,28 @@ class CommentControllerTest {
                 .andExpect(status().isFound());
     }
 
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
+    @Test
+    void testAuthenticatedOnUser() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/comments"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldRedirectBecauseOfAnonymousUser() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/comments"))
+                .andExpect(status().isFound());
+    }
+
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
     @Test
     void testGetCommentByContentByStatus() throws Exception {
         when(commentService.getCommentByContent("Comment")).thenReturn(new Comment("Comment", "Book"));
@@ -46,6 +78,11 @@ class CommentControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
     @Test
     void testGetCommentByBookTitleByStatus() throws Exception {
         when(commentService.getCommentsByBook("Book")).thenReturn(List.of
@@ -56,6 +93,11 @@ class CommentControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
     @Test
     void testGetAllByStatus() throws Exception {
         when(commentService.getAll()).thenReturn(List.of
@@ -66,6 +108,11 @@ class CommentControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
     @Test
     void testUpdateByStatus() throws Exception {
         when(commentService.updateComment("Comment", "Published in 1922"))
@@ -76,6 +123,11 @@ class CommentControllerTest {
                 .andExpect(status().isFound());
     }
 
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
     @Test
     void testDeleteByNameByStatus() throws Exception {
         when(commentService.deleteByContent("Comment")).thenReturn("Comment was deleted");

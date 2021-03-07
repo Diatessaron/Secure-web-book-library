@@ -54,30 +54,20 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public String updateComment(String oldCommentContent, String commentContent) {
-        final Comment comment = commentRepository.findByContent
-                (oldCommentContent).orElseThrow
-                (() -> new IllegalArgumentException("Incorrect old comment content"));
+        final Comment comment = commentRepository.findByContent(oldCommentContent)
+                .orElseThrow(() -> new IllegalArgumentException("Incorrect old comment content"));
 
-        final Book book = getBook(bookRepository.findByTitle(comment.getBook().getTitle()));
         comment.setContent(commentContent);
-        comment.setBook(book.getTitle());
-
         commentRepository.save(comment);
 
-        return book.getTitle() + " comment was updated";
+        return "Comment was updated";
     }
 
     @Transactional
     @Override
     public String deleteByContent(String content) {
-        final List<Book> bookList = bookRepository.findByTitle(commentRepository.findByContent(content)
-                .orElseThrow(() -> new IllegalArgumentException("Incorrect comment content")).getBook().getTitle());
-
-        final Book book = getBook(bookList);
-
         commentRepository.deleteByContent(content);
-
-        return book.getTitle() + " comment was deleted";
+        return "Comment was deleted";
     }
 
     private Book getBook(List<Book> bookList) {
