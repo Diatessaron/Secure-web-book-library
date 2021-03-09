@@ -1,10 +1,12 @@
 package ru.otus.securewebbooklibrary.security;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import ru.otus.securewebbooklibrary.domain.User;
 
 import java.util.Collection;
+import java.util.List;
 
 public class UserPrincipal implements UserDetails {
     private final User user;
@@ -15,7 +17,9 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        final String roleName = user.getRole().getName();
+
+        return List.of(new SimpleGrantedAuthority(roleName));
     }
 
     @Override

@@ -27,9 +27,9 @@ class GenreControllerTest {
     private UserServiceImpl userService;
 
     @WithMockUser(
-            username = "User1",
-            password = "Password1",
-            authorities = {"ROLE_USER"}
+            username = "User2",
+            password = "Password2",
+            authorities = {"ROLE_ADMIN"}
     )
     @Test
     void testSaveByStatus() throws Exception {
@@ -38,6 +38,20 @@ class GenreControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/genres/add")
                 .param("genre", "Genre"))
                 .andExpect(status().isFound());
+    }
+
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
+    @Test
+    void negativeTestSaveByStatus() throws Exception {
+        when(genreService.getAll()).thenReturn(List.of(new Genre("Modernist novel"), new Genre("Genre")));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/genres/add")
+                .param("genre", "Genre"))
+                .andExpect(status().is4xxClientError());
     }
 
     @WithMockUser(
@@ -66,8 +80,8 @@ class GenreControllerTest {
     void testGetGenreByNameByStatus() throws Exception {
         when(genreService.getGenreByName("Genre")).thenReturn(new Genre("Genre"));
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/genres/Genre"))
-                .andExpect(status().isFound());
+        mockMvc.perform(MockMvcRequestBuilders.get("/genres/Genre"))
+                .andExpect(status().isOk());
     }
 
     @WithMockUser(
@@ -84,9 +98,9 @@ class GenreControllerTest {
     }
 
     @WithMockUser(
-            username = "User1",
-            password = "Password1",
-            authorities = {"ROLE_USER"}
+            username = "User2",
+            password = "Password2",
+            authorities = {"ROLE_ADMIN"}
     )
     @Test
     void testUpdateByStatus() throws Exception {
@@ -103,10 +117,37 @@ class GenreControllerTest {
             authorities = {"ROLE_USER"}
     )
     @Test
+    void negativeTestUpdateByStatus() throws Exception {
+        when(genreService.updateGenre("Modernist novel", "Genre")).thenReturn("Genre was updated");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/genres/edit/Modernist novel")
+                .param("genre", "Genre"))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @WithMockUser(
+            username = "User2",
+            password = "Password2",
+            authorities = {"ROLE_ADMIN"}
+    )
+    @Test
     void testDeleteByNameByStatus() throws Exception {
         when(genreService.deleteGenreByName("Modernist novel")).thenReturn("Modernist novel was deleted");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/genres/Modernist novel"))
                 .andExpect(status().isFound());
+    }
+
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
+    @Test
+    void negativeTestDeleteByNameByStatus() throws Exception {
+        when(genreService.deleteGenreByName("Modernist novel")).thenReturn("Modernist novel was deleted");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/genres/Modernist novel"))
+                .andExpect(status().is4xxClientError());
     }
 }

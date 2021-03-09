@@ -32,9 +32,9 @@ class CommentControllerTest {
     private UserServiceImpl userService;
 
     @WithMockUser(
-            username = "User1",
-            password = "Password1",
-            authorities = {"ROLE_USER"}
+            username = "User2",
+            password = "Password2",
+            authorities = {"ROLE_ADMIN"}
     )
     @Test
     void testSaveByStatus() throws Exception {
@@ -46,6 +46,23 @@ class CommentControllerTest {
                 .param("comment", "Comment")
                 .param("book", "Book"))
                 .andExpect(status().isFound());
+    }
+
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
+    @Test
+    void negativeTestSaveByStatus() throws Exception {
+        when(commentService.getAll()).thenReturn(List.of
+                (new Comment("Published in 1922", "Ulysses"),
+                        new Comment("Comment", "Book")));
+
+        mockMvc.perform(post("/comments/add")
+                .param("comment", "Comment")
+                .param("book", "Book"))
+                .andExpect(status().is4xxClientError());
     }
 
     @WithMockUser(
@@ -109,9 +126,9 @@ class CommentControllerTest {
     }
 
     @WithMockUser(
-            username = "User1",
-            password = "Password1",
-            authorities = {"ROLE_USER"}
+            username = "User2",
+            password = "Password2",
+            authorities = {"ROLE_ADMIN"}
     )
     @Test
     void testUpdateByStatus() throws Exception {
@@ -129,10 +146,38 @@ class CommentControllerTest {
             authorities = {"ROLE_USER"}
     )
     @Test
+    void negativeTestUpdateByStatus() throws Exception {
+        when(commentService.updateComment("Comment", "Published in 1922"))
+                .thenReturn("Comment was updated");
+
+        mockMvc.perform(post("/comments/edit/Comment")
+                .param("comment", "Published in 1922"))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @WithMockUser(
+            username = "User2",
+            password = "Password2",
+            authorities = {"ROLE_ADMIN"}
+    )
+    @Test
     void testDeleteByNameByStatus() throws Exception {
         when(commentService.deleteByContent("Comment")).thenReturn("Comment was deleted");
 
         mockMvc.perform(post("/comments/Comment"))
                 .andExpect(status().isFound());
+    }
+
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
+    @Test
+    void negativeTestDeleteByNameByStatus() throws Exception {
+        when(commentService.deleteByContent("Comment")).thenReturn("Comment was deleted");
+
+        mockMvc.perform(post("/comments/Comment"))
+                .andExpect(status().is4xxClientError());
     }
 }

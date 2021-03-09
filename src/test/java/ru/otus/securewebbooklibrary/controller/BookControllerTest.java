@@ -38,9 +38,9 @@ class BookControllerTest {
     private UserServiceImpl userService;
 
     @WithMockUser(
-            username = "User1",
-            password = "Password1",
-            authorities = {"ROLE_USER"}
+            username = "User2",
+            password = "Password2",
+            authorities = {"ROLE_ADMIN"}
     )
     @Test
     void testSaveByStatus() throws Exception {
@@ -51,6 +51,22 @@ class BookControllerTest {
         mockMvc.perform(post("/books/add")
                 .param("book", "Book"))
                 .andExpect(status().isFound());
+    }
+
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
+    @Test
+    void negativeTestSaveByStatus() throws Exception {
+        when(bookService.getAll()).thenReturn(List.of
+                (new Book("Modernist novel", new Author("James Joyce"), new Genre("Modernist novel")),
+                        new Book("Book", new Author("Author"), new Genre("Genre"))));
+
+        mockMvc.perform(post("/books/add")
+                .param("book", "Book"))
+                .andExpect(status().is4xxClientError());
     }
 
     @WithMockUser(
@@ -143,9 +159,9 @@ class BookControllerTest {
     }
 
     @WithMockUser(
-            username = "User1",
-            password = "Password1",
-            authorities = {"ROLE_USER"}
+            username = "User2",
+            password = "Password2",
+            authorities = {"ROLE_ADMIN"}
     )
     @Test
     void testUpdateByStatus() throws Exception {
@@ -165,10 +181,40 @@ class BookControllerTest {
             authorities = {"ROLE_USER"}
     )
     @Test
-    void deleteByTitle() throws Exception {
+    void negativeTestUpdateByStatus() throws Exception {
+        doNothing().when(bookService).updateBook
+                ("Ulysses", "Book", "Author", "Genre");
+
+        mockMvc.perform(post("/books/edit/Ulysses")
+                .param("title", "Book")
+                .param("authorName", "Author")
+                .param("genreName", "Genre"))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @WithMockUser(
+            username = "User2",
+            password = "Password2",
+            authorities = {"ROLE_ADMIN"}
+    )
+    @Test
+    void testDeleteByTitle() throws Exception {
         doNothing().when(bookService).deleteBookByTitle("Ulysses");
 
         mockMvc.perform(post("/books/edit/Ulysses"))
                 .andExpect(status().isFound());
+    }
+
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
+    @Test
+    void negativeTestDeleteByTitle() throws Exception {
+        doNothing().when(bookService).deleteBookByTitle("Ulysses");
+
+        mockMvc.perform(post("/books/edit/Ulysses"))
+                .andExpect(status().is4xxClientError());
     }
 }

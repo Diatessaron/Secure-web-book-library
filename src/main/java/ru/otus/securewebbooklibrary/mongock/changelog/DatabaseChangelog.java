@@ -41,9 +41,17 @@ public class DatabaseChangelog {
         repository.save(new Comment("Published in 1922", "Ulysses"));
     }
 
-    @ChangeSet(order = "006", id = "insertUsers", runAlways = true, author = "Diatessaron")
+    @ChangeSet(order = "006", id = "insertRoles", runAlways = true, author = "Diatessaron")
+    public void insertRoles(RoleRepository repository) {
+        repository.save(new Role("ROLE_USER"));
+        repository.save(new Role("ROLE_ADMIN"));
+    }
+
+    @ChangeSet(order = "007", id = "insertUsers", runAlways = true, author = "Diatessaron")
     public void insertUsers(UserRepository repository) {
-        repository.save(new User("User1", bCryptPasswordEncoder.encode("Password1")));
-        repository.save(new User("User2", bCryptPasswordEncoder.encode("Password2")));
+        repository.save(new User("User1", bCryptPasswordEncoder.encode("Password1"),
+                new Role("ROLE_USER")));
+        repository.save(new User("User2", bCryptPasswordEncoder.encode("Password2"),
+                new Role("ROLE_ADMIN")));
     }
 }
