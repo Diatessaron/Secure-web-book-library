@@ -9,11 +9,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @SpringBootApplication
 @EnableMongock
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecureWebBookLibraryApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(SecureWebBookLibraryApplication.class, args);
     }
-
 }
