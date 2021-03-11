@@ -17,6 +17,13 @@
 </head>
 <body>
 
+<header class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+    <input onclick="document.location.href = '/login'; return false;" type="submit" value="Login"
+           style="margin: 15px;"/>
+    <input onclick="document.location.href = '/logout'; return false;" type="submit" value="Logout"
+           style="margin: 15px;">
+</header>
+
 <div class="menu">
     <a th:href="@{/books}" href="bookList.html">Books</a>
     <a th:href="@{/comments}" href="commentList.html">Comments</a>

@@ -27,9 +27,9 @@ class AuthorControllerTest {
     private UserServiceImpl userService;
 
     @WithMockUser(
-            username = "User1",
-            password = "Password1",
-            authorities = {"ROLE_USER"}
+            username = "User2",
+            password = "Password2",
+            authorities = {"ROLE_ADMIN"}
     )
     @Test
     void shouldGetCorrectStatusAfterAuthorCreation() throws Exception {
@@ -38,6 +38,20 @@ class AuthorControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/authors/add")
                 .param("author", "Author"))
                 .andExpect(status().isFound());
+    }
+
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
+    @Test
+    void negativeGetCorrectStatusAfterAuthorCreation() throws Exception {
+        when(authorService.getAll()).thenReturn(List.of(new Author("James Joyce"), new Author("Author")));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/authors/add")
+                .param("author", "Author"))
+                .andExpect(status().is4xxClientError());
     }
 
     @WithMockUser(
@@ -84,9 +98,9 @@ class AuthorControllerTest {
     }
 
     @WithMockUser(
-            username = "User1",
-            password = "Password1",
-            authorities = {"ROLE_USER"}
+            username = "User2",
+            password = "Password2",
+            authorities = {"ROLE_ADMIN"}
     )
     @Test
     void testUpdateByCorrectStatus() throws Exception {
@@ -103,10 +117,37 @@ class AuthorControllerTest {
             authorities = {"ROLE_USER"}
     )
     @Test
-    void deleteByName() throws Exception {
+    void negativeTestUpdateByCorrectStatus() throws Exception {
+        when(authorService.updateAuthor("James Joyce", "Author")).thenReturn("Author was updated");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/authors/edit/James Joyce")
+                .param("author", "Author"))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @WithMockUser(
+            username = "User2",
+            password = "Password2",
+            authorities = {"ROLE_ADMIN"}
+    )
+    @Test
+    void testDeleteByName() throws Exception {
         when(authorService.deleteAuthorByName("Author")).thenReturn("Author was deleted");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/authors/Author"))
                 .andExpect(status().isFound());
+    }
+
+    @WithMockUser(
+            username = "User1",
+            password = "Password1",
+            authorities = {"ROLE_USER"}
+    )
+    @Test
+    void negativeTestDeleteByName() throws Exception {
+        when(authorService.deleteAuthorByName("Author")).thenReturn("Author was deleted");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/authors/Author"))
+                .andExpect(status().is4xxClientError());
     }
 }
